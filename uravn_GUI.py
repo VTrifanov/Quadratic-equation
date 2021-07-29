@@ -1,5 +1,6 @@
 ﻿import tkinter as tk
 import random
+import grafic
 from fractions import Fraction
 
 intx = (lambda x: int(x) if x == int(x) else x)  # если возможно делаем тип int
@@ -7,13 +8,7 @@ floatx = (lambda x: float(x) if float(x) == round(float(x), 12) else x)  # ес�
 revers_sign = (lambda x: '-' if x == '+' else '')
 
 
-def create_canvas():  # TODO
-    window2 = tk.Tk()
-    canvas = tk.Canvas(window2)
-    canvas.pack()
-    window2.title('холст')
-    window2.geometry('800x650+200+10')
-
+def draw_main_form():
 
 def check_vvod(x):  # пытаемся преобразовать коэффициенты из строки в число
     while True:
@@ -119,6 +114,13 @@ def calculate():
         result.insert('1.0', 'все коэффициенты должны быть числовыми')
 
 
+def draw_grafic():
+    a=0
+    b=0
+    c=0
+    grafic.main(a, b, c)
+
+
 r = lambda: random.randint(155, 255)
 colors = ('#%02X%02X%02X' % (r(), r(), r()))
 
@@ -145,7 +147,7 @@ frame2 = tk.Frame(window, bg=colors)
 frame2.pack()
 button = tk.Button(frame2, text='решить уравнение', font="Arial 17", command=calculate)
 button.pack(side=tk.LEFT, padx=20, pady=20)
-button = tk.Button(frame2, text='бонус', font="Arial 17", state=tk.DISABLED, command=create_canvas)
+button = tk.Button(frame2, text='бонус', font="Arial 17", state=tk.NORMAL, command=draw_grafic)
 button.pack(side=tk.RIGHT, padx=20, pady=20)
 result = tk.Text(window, width=50, height=13, font="Arial 20")
 result.pack()
