@@ -29,7 +29,6 @@ def oxes(x_left, x_right, y_top, y_bottom):
     cy = y_top*dy
     canvas.create_line(0, cy, canvas_w, cy, fill="white")
     canvas.create_line(cx, 0, cx, canvas_h, fill="white")
-    print(cy, canvas_w, cy)
     x_step = (x_right - x_left) / 8
     x = x_left + x_step
     while x < x_right:

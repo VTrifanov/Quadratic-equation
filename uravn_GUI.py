@@ -8,24 +8,23 @@ floatx = (lambda x: float(x) if float(x) == round(float(x), 12) else x)  # ес�
 revers_sign = (lambda x: '-' if x == '+' else '')
 
 
-def draw_main_form():
-
-def check_vvod(x):  # пытаемся преобразовать коэффициенты из строки в число
-    while True:
-        if '/' in x:
-            try:
-                x = Fraction(x)
-                x = floatx(x)
-                x = intx(x)
-                return x
-            except:
-                return x
+def check_input():  # пытаемся преобразовать коэффициенты из строки в число
+    res = []
+    a = input_a.get()
+    if a == '': a = '0'
+    b = input_b.get()
+    if b == '': b = '0'
+    c = input_c.get()
+    if c == '': c = '0'
+    for x in (a, b, c):
         try:
-            x = float(x)
+            x = Fraction(x)
+            x = floatx(x)
             x = intx(x)
-            return x
+            res.append(x)
         except:
-            return x
+            res.append(x)
+    return res
 
 
 def signs_koef(a, b, c):  # определяем знаки коэффициентов, для красивой печати
@@ -45,20 +44,13 @@ def signs_koef(a, b, c):  # определяем знаки коэффициен
 
 
 def calculate():
-    a = vvod_a.get()
-    if a == '': a = '0'
-    b = vvod_b.get()
-    if b == '': b = '0'
-    c = vvod_c.get()
-    if c == '': c = '0'
-    a = check_vvod(a)
-    b = check_vvod(b)
-    c = check_vvod(c)
-
+    global a, b, c, answer
+    a, b, c = check_input()
+    answer = []
     if type(a) != str and type(b) != str and type(
             c) != str:  # если вместо a,b или c введены не числа, то просим исправить
         a_sign, b_sign, c_sign = signs_koef(a, b, c)
-
+        button2.config(state=tk.NORMAL)
         result.delete('1.0', tk.END)
         result.config(fg='black', font="Arial 20")
         result.insert('1.0', f'получили уравнение:\n{a}x\u00B2{b_sign}{abs(b)}x{c_sign}{abs(c)}=0')
@@ -70,12 +62,16 @@ def calculate():
             x = floatx(x)
             x = intx(x)
             result.insert('6.0', f'{b}x={revers_sign(c_sign)}{abs(c)}\nx={x}')
+            answer = [x]
         elif a == 0 and b != 0 and c == 0:
             result.insert('3.0', f', а точнее\n{b}x=0\nэто не квадратное уравнение\nвсё равно решим\nx=0')
+            answer = [0]
         elif a == 0 and b == 0 and c != 0:
             result.insert('3.0', f', а точнее\n{c}=0\nэто не квадратное уравнение\nтут нет решения')
+            button2.config(state=tk.DISABLED)
         elif a == 0 and b == 0 and c == 0:
             result.insert('3.0', f', а точнее\n0=0\nэто верно при любом x\nввдите ненулевые коэффициенты')
+            button2.config(state=tk.DISABLED)
         else:
             a1 = Fraction(str(a))  # для подсчёта используем обыкновенные дроби
             b1 = Fraction(str(b))
@@ -91,11 +87,13 @@ def calculate():
                 x = floatx(x)
                 x = intx(x)
                 result.insert('6.0', f'\nодин корень\nx=-b/2a => x=({b}) / (2*{a})\nx={x}')
+                answer = [x]
             elif D ** (1 / 2) != round(D ** (1 / 2), 9):
                 result.insert('6.0', '\nиррациональные корни\n')
                 result.insert('7.0', f'два корня:\nx1=(-b+u\u221aD)/2a  и  x2=(-b-u\u221aD)/2a')
                 result.insert('8.0',
                               f'\n\nx1=({revers_sign(b_sign)}{abs(b)}+\u221a{D}) / ({2 * a}),\nx2=({revers_sign(b_sign)}{abs(b)}-\u221a{D}) / ({2 * a})')
+                answer = [(-b + D ** 0.5) / 2 * a, (-b - D ** 0.5) / 2 * a]
             else:
                 x1 = (-b1 + Fraction(str(D ** 0.5))) / (2 * a1)
                 x1 = floatx(x1)
@@ -106,21 +104,24 @@ def calculate():
                 result.insert('5.0', f'\nдва корня:\nx1=(-b+u\u221aD)/2a  и  x2=(-b-u\u221aD)/2a')
                 result.insert('8.0',
                               f'\n\nx1=({revers_sign(b_sign)}{abs(b)}+{intx(D ** 0.5)}) / ({2 * a}) = {x1},\nx2=({revers_sign(b_sign)}{abs(b)}-{intx(D ** 0.5)}) / ({2 * a}) = {x2}')
-
-
+                answer = [(-b + D ** 0.5) / 2 * a, (-b - D ** 0.5) / 2 * a]
+        print(answer)
     else:
         result.delete('1.0', tk.END)
         result.config(fg='red')
         result.insert('1.0', 'все коэффициенты должны быть числовыми')
+        button2.config(state=tk.DISABLED)
 
 
 def draw_grafic():
-    a=0
-    b=0
-    c=0
+    # a=0
+    # b=0
+    # c=0
+    button2.config(state=tk.DISABLED)
     grafic.main(a, b, c)
 
 
+# случайный выбор цвета фона главного окна (светлые тона)
 r = lambda: random.randint(155, 255)
 colors = ('#%02X%02X%02X' % (r(), r(), r()))
 
@@ -131,24 +132,27 @@ window.config(bg=colors)
 greeting = tk.Label(text='Квадратное уровнение имеет вид: ax\u00B2+bx+c=0', bg=colors, font="Arial 22")
 greeting.pack()
 
-oblast_vvoda = tk.Frame(window, bg=colors)
-tk.Label(oblast_vvoda, text='введите коэффициенты a, b, c', bg=colors, font="Arial 22").pack()
-vvod_a = tk.Entry(oblast_vvoda, width=7, font="Arial 17")
-vvod_a.pack(side=tk.LEFT)
-tk.Label(oblast_vvoda, text='x\u00B2+', bg=colors, font="Arial 22").pack(side=tk.LEFT)
-vvod_b = tk.Entry(oblast_vvoda, width=7, font="Arial 17")
-vvod_b.pack(side=tk.LEFT)
-tk.Label(oblast_vvoda, text='x+', bg=colors, font="Arial 22").pack(side=tk.LEFT)
-vvod_c = tk.Entry(oblast_vvoda, width=7, font="Arial 17")
-vvod_c.pack(side=tk.LEFT)
-tk.Label(oblast_vvoda, text='=0', bg=colors, font="Arial 22").pack(side=tk.LEFT)
-oblast_vvoda.pack()
+# область ввода коэффициентов a, b, c
+input_area = tk.Frame(window, bg=colors)
+tk.Label(input_area, text='введите коэффициенты a, b, c', bg=colors, font="Arial 22").pack()
+input_a = tk.Entry(input_area, width=7, font="Arial 17")
+input_a.pack(side=tk.LEFT)
+tk.Label(input_area, text='x\u00B2+', bg=colors, font="Arial 22").pack(side=tk.LEFT)
+input_b = tk.Entry(input_area, width=7, font="Arial 17")
+input_b.pack(side=tk.LEFT)
+tk.Label(input_area, text='x+', bg=colors, font="Arial 22").pack(side=tk.LEFT)
+input_c = tk.Entry(input_area, width=7, font="Arial 17")
+input_c.pack(side=tk.LEFT)
+tk.Label(input_area, text='=0', bg=colors, font="Arial 22").pack(side=tk.LEFT)
+input_area.pack()
+
+# кнопки и вывод результата
 frame2 = tk.Frame(window, bg=colors)
 frame2.pack()
-button = tk.Button(frame2, text='решить уравнение', font="Arial 17", command=calculate)
-button.pack(side=tk.LEFT, padx=20, pady=20)
-button = tk.Button(frame2, text='бонус', font="Arial 17", state=tk.NORMAL, command=draw_grafic)
-button.pack(side=tk.RIGHT, padx=20, pady=20)
+button1 = tk.Button(frame2, text='решить уравнение', font="Arial 17", command=calculate)
+button1.pack(side=tk.LEFT, padx=20, pady=20)
+button2 = tk.Button(frame2, text='бонус', font="Arial 17", state=tk.DISABLED, command=draw_grafic)
+button2.pack(side=tk.RIGHT, padx=20, pady=20)
 result = tk.Text(window, width=50, height=13, font="Arial 20")
 result.pack()
 
