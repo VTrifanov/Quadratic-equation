@@ -93,7 +93,7 @@ def calculate():
                 result.insert('7.0', f'два корня:\nx1=(-b+u\u221aD)/2a  и  x2=(-b-u\u221aD)/2a')
                 result.insert('8.0',
                               f'\n\nx1=({revers_sign(b_sign)}{abs(b)}+\u221a{D}) / ({2 * a}),\nx2=({revers_sign(b_sign)}{abs(b)}-\u221a{D}) / ({2 * a})')
-                answer = [(-b + D ** 0.5) / 2 * a, (-b - D ** 0.5) / 2 * a]
+                answer = [(-b + D ** 0.5) / (2 * a), (-b - D ** 0.5) / (2 * a)]
             else:
                 x1 = (-b1 + Fraction(str(D ** 0.5))) / (2 * a1)
                 x1 = floatx(x1)
@@ -104,8 +104,7 @@ def calculate():
                 result.insert('5.0', f'\nдва корня:\nx1=(-b+u\u221aD)/2a  и  x2=(-b-u\u221aD)/2a')
                 result.insert('8.0',
                               f'\n\nx1=({revers_sign(b_sign)}{abs(b)}+{intx(D ** 0.5)}) / ({2 * a}) = {x1},\nx2=({revers_sign(b_sign)}{abs(b)}-{intx(D ** 0.5)}) / ({2 * a}) = {x2}')
-                answer = [(-b + D ** 0.5) / 2 * a, (-b - D ** 0.5) / 2 * a]
-        print(answer)
+                answer = [(-b + D ** 0.5) / (2 * a), (-b - D ** 0.5) / (2 * a)]
     else:
         result.delete('1.0', tk.END)
         result.config(fg='red')
@@ -118,7 +117,33 @@ def draw_grafic():
     # b=0
     # c=0
     button2.config(state=tk.DISABLED)
-    grafic.main(a, b, c)
+    answer.append(0)
+    answer.append(-3)
+    answer.append(3)
+    if a!=0:
+        answer.append(-b/(2*a))
+    answer_y=[]
+    for i in answer:
+        answer_y.append(a*i**2+b*i+c)
+    answer_y.append(0)
+    print(answer, answer_y)
+    x_min_canvas = round(min(answer))
+    x_max_canvas = round(max(answer))
+    y_min_canvas = round(min(answer_y))
+    y_max_canvas = round(max(answer_y))
+    print(x_min_canvas, x_max_canvas)
+    x_max_canvas += 6-(x_max_canvas - x_min_canvas) % 6
+    y_max_canvas += 6-(y_max_canvas - y_min_canvas) % 6
+    print('x=>', x_min_canvas, x_max_canvas)
+    print('y=>', y_min_canvas, y_max_canvas)
+    dx=(x_max_canvas - x_min_canvas)
+    dy=(y_max_canvas - y_min_canvas)
+    x_min_canvas -= (dx // 6)
+    x_max_canvas += (dx // 6)
+    y_min_canvas -= (dy // 6)
+    y_max_canvas += (dy // 6)
+    print(x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas)
+    grafic.main(a, b, c, x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas)
 
 
 # случайный выбор цвета фона главного окна (светлые тона)
