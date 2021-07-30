@@ -113,36 +113,35 @@ def calculate():
 
 
 def draw_grafic():
-    # a=0
-    # b=0
-    # c=0
     button2.config(state=tk.DISABLED)
+
+   #расчет отображения системы координат на холсте
     answer.append(0)
-    answer.append(-3)
-    answer.append(3)
+    answer.append(-6)
+    answer.append(6)
     if a!=0:
         answer.append(-b/(2*a))
     answer_y=[]
     for i in answer:
         answer_y.append(a*i**2+b*i+c)
     answer_y.append(0)
-    print(answer, answer_y)
     x_min_canvas = round(min(answer))
     x_max_canvas = round(max(answer))
     y_min_canvas = round(min(answer_y))
     y_max_canvas = round(max(answer_y))
-    print(x_min_canvas, x_max_canvas)
     x_max_canvas += 6-(x_max_canvas - x_min_canvas) % 6
     y_max_canvas += 6-(y_max_canvas - y_min_canvas) % 6
-    print('x=>', x_min_canvas, x_max_canvas)
-    print('y=>', y_min_canvas, y_max_canvas)
-    dx=(x_max_canvas - x_min_canvas)
-    dy=(y_max_canvas - y_min_canvas)
-    x_min_canvas -= (dx // 6)
-    x_max_canvas += (dx // 6)
-    y_min_canvas -= (dy // 6)
-    y_max_canvas += (dy // 6)
-    print(x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas)
+    dx=(x_max_canvas - x_min_canvas)/6
+    dy=(y_max_canvas - y_min_canvas)/6
+    x_min_canvas=x_min_canvas-(x_max_canvas%dx)
+    x_max_canvas=x_max_canvas-(x_max_canvas%dx)
+    y_min_canvas = y_min_canvas - (y_max_canvas % dy)
+    y_max_canvas = y_max_canvas - (y_max_canvas % dy)
+    x_min_canvas -= (dx)
+    x_max_canvas += (dx)
+    y_min_canvas -= (dy)
+    y_max_canvas += (dy)
+
     grafic.main(a, b, c, x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas)
 
 
