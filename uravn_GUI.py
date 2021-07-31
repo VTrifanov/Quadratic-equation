@@ -83,10 +83,10 @@ def calculate():
             if D < 0:
                 result.insert('6.0', f'\nдискриминант меньше нуля\nнет решения')
             elif D == 0:
-                x = -b / 2 * a
+                x = -b / (2 * a)
                 x = floatx(x)
                 x = intx(x)
-                result.insert('6.0', f'\nодин корень\nx=-b/2a => x=({b}) / (2*{a})\nx={x}')
+                result.insert('6.0', f'\nодин корень\nx=-b/2a => x=({-b}) / (2*{a})\nx={x}')
                 answer = [x]
             elif D ** (1 / 2) != round(D ** (1 / 2), 9):
                 result.insert('6.0', '\nиррациональные корни\n')
@@ -112,36 +112,40 @@ def calculate():
         button2.config(state=tk.DISABLED)
 
 
-def draw_grafic():
-    button2.config(state=tk.DISABLED)
-
-   #расчет отображения системы координат на холсте
+def calculate_coordinate_system():
+    # расчет отображения системы координат на холсте
     answer.append(0)
     answer.append(-6)
     answer.append(6)
-    if a!=0:
-        answer.append(-b/(2*a))
-    answer_y=[]
+    if a != 0:
+        answer.append(-b / (2 * a))
+    answer_y = []
     for i in answer:
-        answer_y.append(a*i**2+b*i+c)
+        answer_y.append(a * i ** 2 + b * i + c)
     answer_y.append(0)
     x_min_canvas = round(min(answer))
     x_max_canvas = round(max(answer))
     y_min_canvas = round(min(answer_y))
     y_max_canvas = round(max(answer_y))
-    x_max_canvas += 6-(x_max_canvas - x_min_canvas) % 6
-    y_max_canvas += 6-(y_max_canvas - y_min_canvas) % 6
-    dx=(x_max_canvas - x_min_canvas)/6
-    dy=(y_max_canvas - y_min_canvas)/6
-    x_min_canvas=x_min_canvas-(x_max_canvas%dx)
-    x_max_canvas=x_max_canvas-(x_max_canvas%dx)
+    if (x_max_canvas - x_min_canvas) % 6 != 0:
+        x_max_canvas += 6 - (x_max_canvas - x_min_canvas) % 6
+    if (y_max_canvas - y_min_canvas) % 6 != 0:
+        y_max_canvas += 6 - (y_max_canvas - y_min_canvas) % 6
+    dx = (x_max_canvas - x_min_canvas) / 6
+    dy = (y_max_canvas - y_min_canvas) / 6
+    x_min_canvas = x_min_canvas - (x_max_canvas % dx)
+    x_max_canvas = x_max_canvas - (x_max_canvas % dx)
     y_min_canvas = y_min_canvas - (y_max_canvas % dy)
     y_max_canvas = y_max_canvas - (y_max_canvas % dy)
     x_min_canvas -= (dx)
     x_max_canvas += (dx)
     y_min_canvas -= (dy)
     y_max_canvas += (dy)
+    return x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas
 
+def draw_grafic():
+    button2.config(state=tk.DISABLED)
+    x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas = calculate_coordinate_system()
     grafic.main(a, b, c, x_min_canvas, x_max_canvas, y_min_canvas, y_max_canvas)
 
 
